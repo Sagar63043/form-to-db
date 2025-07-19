@@ -1,20 +1,21 @@
 <?php
-$conn = new mysqli("localhost", "root", "", "formtodb");
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 
-if ($conn->connect_error) {
-  die("Connection failed: " . $conn->connect_error);
-}
+include 'config.php';
 
 $name = $_POST['name'];
 $email = $_POST['email'];
 
-$sql = "INSERT INTO contacts (name, email) VALUES ('$name', '$email')";
+$stmt = $conn->prepare("INSERT INTO contacts (name, email) VALUES (?, ?)");
+$stmt->bind_param("ss", $name, $email);
 
-if ($conn->query($sql) === TRUE) {
-  echo "Contact saved successfully.";
+if ($stmt->execute()) {
+    echo "✅ Contact saved successfully.";
 } else {
-  echo "Error: " . $conn->error;
+    echo "❌ Error: " . $stmt->error;
 }
 
+$stmt->close();
 $conn->close();
 ?>
